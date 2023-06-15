@@ -397,7 +397,8 @@ class _AnimalDataPageState extends State<AnimalDataPage> {
                                     const EdgeInsets.only(top: 24, bottom: 100),
                                 child: CustomButton(
                                   text: 'Editar ',
-                                  function: () => Navigator.of(context).pushNamed('navbar'),
+                                  function: () =>
+                                      Navigator.of(context).pushNamed('navbar'),
                                 ),
                               ),
                             ],

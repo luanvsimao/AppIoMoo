@@ -2,7 +2,7 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_open_whatsapp/flutter_open_whatsapp.dart';
+//import 'package:flutter_open_whatsapp/flutter_open_whatsapp.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:iomoo/components/input.dart';
@@ -52,22 +52,21 @@ class _UserLoginPageState extends State<UserLoginPage> {
     }
   }
 
-  void needHelp() async {
-    final phoneNumber = '+5517988134579';
-    final message = 'Hello';
+  void needHelp({@required number, @required message}) async {
+    String url =
+        'whatsapp://send?phone=+5517988134579&text=Olá, preciso de ajuda!';
+    launchUrl(Uri.parse(url));
 
-    FlutterOpenWhatsapp.sendSingleMessage(phoneNumber, message);
+    await canLaunch(url) ? launch(url) : print('Não foi possível abrir o link');
   }
 
   void resetPassword() async {
-    final url = Uri.parse(
-        'whatsapp://send?phone=5517988134579&text=Olá, preciso de uma nova senha!');
+    String url =
+        'whatsapp://send?phone=5517988134579&text=Olá, preciso de uma nova senha!';
 
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url);
-    } else {
-      print('Não foi possível abrir o WhatsApp.');
-    }
+    launchUrl(Uri.parse(url));
+
+    await canLaunch(url) ? launch(url) : print('Não foi possível abrir o link');
   }
 
   @override
@@ -92,6 +91,7 @@ class _UserLoginPageState extends State<UserLoginPage> {
               //Texto
               Container(
                 padding: const EdgeInsets.only(bottom: 4.0),
+                alignment: Alignment.center,
                 child: const Text(
                   'Bem-vindo(a)',
                   style: AppTypography.headingLogin,
@@ -161,7 +161,6 @@ class _UserLoginPageState extends State<UserLoginPage> {
                       TextButton(
                         // ignore: avoid_returning_null_for_void
                         onPressed: () => needHelp(),
-                        //needHelp(),
                         child: const Text(
                           'Preciso de ajuda',
                           style: AppTypography.extraBold,

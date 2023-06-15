@@ -37,11 +37,18 @@ class _NavBarPageState extends State<NavBarPage> {
       child: Scaffold(
         extendBody: true,
         appBar: AppBar(
+          toolbarHeight: 72.0,
           backgroundColor: const Color(0xFF00DA30),
-          title: SvgPicture.asset('assets/images/logo-white-iomoo.svg',
-              height: 26, width: 26),
+          title: Container(
+            child: SvgPicture.asset('assets/images/logo-white-iomoo.svg',
+                height: 26, width: 26),
+          ),
           actions: const <Widget>[
-            Icon(Icons.help_outline, color: Color(0xFF052C0E), size: 26.0),
+            Padding(
+              padding: EdgeInsets.only(right: 32),
+              child: Icon(Icons.help_outline,
+                  color: Color(0xFF052C0E), size: 26.0),
+            ),
           ],
         ),
         body: screens[indexTela],

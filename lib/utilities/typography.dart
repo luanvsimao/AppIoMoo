@@ -29,7 +29,7 @@ class AppTypography {
     fontSize: 22,
     fontWeight: FontWeight.w700,
     color: AppColors.text,
-    letterSpacing: -2,
+    letterSpacing: -1,
   );
   static const TextStyle body = TextStyle(
     fontFamily: 'Axiforma',
@@ -37,7 +37,7 @@ class AppTypography {
     fontWeight: FontWeight.w500,
     color: AppColors.text,
   );
-   static const TextStyle idDevice= TextStyle(
+  static const TextStyle idDevice = TextStyle(
     fontFamily: 'Axiforma',
     fontSize: 14,
     fontWeight: FontWeight.w500,

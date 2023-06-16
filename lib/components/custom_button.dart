@@ -8,8 +8,7 @@ class CustomButton extends StatefulWidget {
   final String text;
   final Function()? function;
 
-
-   const CustomButton({
+  const CustomButton({
     Key? key,
     required this.text,
     required this.function,
@@ -20,20 +19,22 @@ class CustomButton extends StatefulWidget {
 }
 
 class _CustomButton extends State<CustomButton> {
- 
   @override
   Widget build(BuildContext context) {
-
     TextStyle textStyle;
     Color backgroundColor;
 
     if (widget.text == 'Cancelar') {
-      textStyle =
-          AppTypography.text.copyWith(color: AppColors.primaryColor);
+      textStyle = AppTypography.text.copyWith(color: AppColors.primaryColor);
       backgroundColor = AppColors.modalBackground;
+    } else if (widget.text == 'Finalizar Cadastro') {
+      textStyle = AppTypography.text.copyWith(color: AppColors.modalBackground);
+      backgroundColor = AppColors.secondColor;
+    } else if (widget.text == 'Excluir Animal') {
+      textStyle = AppTypography.text.copyWith(color: AppColors.modalBackground);
+      backgroundColor = Color(0xFFdc2626);
     } else {
-      textStyle =
-          AppTypography.text.copyWith(color: AppColors.modalBackground);
+      textStyle = AppTypography.text.copyWith(color: AppColors.modalBackground);
       backgroundColor = AppColors.primaryColor;
     }
 
@@ -48,6 +49,7 @@ class _CustomButton extends State<CustomButton> {
             borderRadius: BorderRadius.circular(72.0),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 15.0),
+          elevation: 0,
         ),
         child: Text(
           widget.text,

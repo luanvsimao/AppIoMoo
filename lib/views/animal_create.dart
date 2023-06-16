@@ -28,7 +28,7 @@ class _AnimalCreatePageState extends State<AnimalCreatePage> {
   String? birthday;
   String? breed;
   String? id;
-  String? idDevice = "89J5RTYHRT89H4ERG4456.94561YR561RGDF561FGDHG51DDF561G";
+  String? idDevice;
   String? nickname;
   String? weight;
 
@@ -45,7 +45,8 @@ class _AnimalCreatePageState extends State<AnimalCreatePage> {
           idDevice: idDevice!,
           uidUser: auth.currentUser!.uid,
           nickname: nickname!,
-          weight: weight!);
+          weight: weight!,
+          location: const GeoPoint(-20.7934354196425, -49.399928030684805));
       firestore.collection('cattle').add(animal.toMap()).then((value) {
         // operação bem sucedida
         Navigator.of(context).pushNamed('navbar');
@@ -60,12 +61,12 @@ class _AnimalCreatePageState extends State<AnimalCreatePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 32),
+        padding: const EdgeInsets.symmetric(horizontal: 44, vertical: 32),
         children: [
           Center(
             child: Column(
               crossAxisAlignment:
-                  CrossAxisAlignment.start, // Define o alinhamento à esquerda
+                  CrossAxisAlignment.center, // Define o alinhamento à esquerda
               children: [
                 //Texto
                 Container(
@@ -94,7 +95,7 @@ class _AnimalCreatePageState extends State<AnimalCreatePage> {
                       // Campo de identificação
                       Input(
                           label: 'Identificação do Animal*',
-                          type: TextInputType.none,
+                          type: TextInputType.name,
                           icon: AppIcons.id,
                           hint: '#38724951',
                           value: (value) => id = value),
@@ -102,7 +103,7 @@ class _AnimalCreatePageState extends State<AnimalCreatePage> {
                       // Campo de apelido
                       Input(
                           label: 'Apelido do Animal',
-                          type: TextInputType.none,
+                          type: TextInputType.name,
                           icon: AppIcons.nickname,
                           hint: 'Otis',
                           mandatory: false,
@@ -187,6 +188,7 @@ class _AnimalCreatePageState extends State<AnimalCreatePage> {
                           value: (value) => birthday = value),
 
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -205,6 +207,7 @@ class _AnimalCreatePageState extends State<AnimalCreatePage> {
                                   cursorColor: const Color(
                                       0xFF00DA30), // Define a cor do cursor
                                   decoration: InputDecoration(
+                                    contentPadding: EdgeInsets.all(20),
                                     hintText: '124 kg',
                                     hintStyle: AppTypography.inputHint,
                                     border: OutlineInputBorder(
@@ -242,6 +245,7 @@ class _AnimalCreatePageState extends State<AnimalCreatePage> {
                                 height: 70,
                                 child: DropdownButtonFormField<String>(
                                   decoration: InputDecoration(
+                                    contentPadding: EdgeInsets.all(18),
                                     hintText: 'Sexo',
                                     hintStyle: AppTypography.inputHint,
                                     border: OutlineInputBorder(
@@ -292,10 +296,18 @@ class _AnimalCreatePageState extends State<AnimalCreatePage> {
                         ),
                         child: InkWell(
                           onTap: () async {
-                            await showBarModalBottomSheet(
+                            final result = await showBarModalBottomSheet(
                               context: context,
-                              builder: (context) => const ModalNFC(),
+                              builder: (context) => ModalNFC(
+                                onTagRead: (value) {},
+                              ),
                             );
+
+                            if (result != null) {
+                              setState(() {
+                                idDevice = result;
+                              });
+                            }
                           },
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -311,7 +323,7 @@ class _AnimalCreatePageState extends State<AnimalCreatePage> {
                                       text:
                                           'Clique aqui para ', // Texto a ser exibido
                                       style: TextStyle(
-                                        fontSize: 16.0,
+                                        fontSize: 14.0,
                                         color:
                                             Color(0xFF0C1E10), // Cor do texto
                                       ),
@@ -320,7 +332,7 @@ class _AnimalCreatePageState extends State<AnimalCreatePage> {
                                       text:
                                           'adicionar um dispositivo', // Parte do texto com uma cor diferente
                                       style: TextStyle(
-                                        fontSize: 16.0,
+                                        fontSize: 14.0,
                                         color: AppColors
                                             .primaryColor, // Cor do texto
                                       ),
@@ -332,7 +344,6 @@ class _AnimalCreatePageState extends State<AnimalCreatePage> {
                           ),
                         ),
                       ),
-
                       Container(
                         width: 304,
                         height: 65,

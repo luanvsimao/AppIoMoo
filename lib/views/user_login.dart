@@ -135,7 +135,7 @@ class _UserLoginPageState extends State<UserLoginPage> {
 
                     //"Esqueci minha senha"
                     Container(
-                      height: 30,
+                      height: 60,
                       margin: const EdgeInsets.only(top: 22.0),
                       child: TextButton(
                         // ignore: avoid_returning_null_for_void
@@ -143,13 +143,19 @@ class _UserLoginPageState extends State<UserLoginPage> {
                         //needHelp(),
                         child: const Text(
                           'Esqueci minha senha',
-                          style: AppTypography.body,
+                          style: TextStyle(
+                            fontFamily: 'Axiforma',
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.text,
+                          ),
                         ),
                       ),
                     ),
                   ],
                 ),
               ),
+              SizedBox(height: 40.0),
               Expanded(
                 flex: 1,
                 child: Container(
@@ -158,19 +164,22 @@ class _UserLoginPageState extends State<UserLoginPage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      TextButton(
-                        // ignore: avoid_returning_null_for_void
-                        onPressed: () => needHelp(),
-                        child: const Text(
-                          'Preciso de ajuda',
-                          style: AppTypography.extraBold,
-                        ),
-                      ),
-                      const SizedBox(width: 5.0),
-                      const Icon(
+                      Icon(
                         Icons.help_outline,
                         color: AppColors.primaryColor,
-                        size: 14.0,
+                        size: 22.0,
+                      ),
+                      TextButton(
+                        onPressed: () => needHelp(),
+                        child: Text(
+                          'Preciso de ajuda',
+                          style: TextStyle(
+                            fontFamily: 'Axiforma',
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.text,
+                          ),
+                        ),
                       ),
                     ],
                   ),

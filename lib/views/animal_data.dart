@@ -1,9 +1,12 @@
 // ignore_for_file: library_private_types_in_public_api
 
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:iomoo/utilities/typography.dart';
 
 import '../components/cardanimal_data.dart';
@@ -62,8 +65,62 @@ class _AnimalDataPageState extends State<AnimalDataPage> {
           uidUser: animal['uidUser'],
           nickname: animal['nickname'],
           weight: animal['weight'],
+          location: animal['location'],
         );
       });
+    }
+  }
+
+  final Completer<GoogleMapController> _controller =
+      Completer<GoogleMapController>();
+
+  static const CameraPosition _kGooglePlex = CameraPosition(
+    target: LatLng(-20.792893797175797, -49.39992803068541),
+    zoom: 17,
+  );
+
+  final Set<Marker> markers = {}; // Conjunto de marcadores no mapa
+
+  Future<void> fetchDocumentsAndAddMarkers() async {
+    setState(() {
+      markers.clear();
+
+      final GeoPoint? geoPoint = animalData.location;
+      final double latitude = geoPoint!.latitude;
+      final double longitude = geoPoint.longitude;
+      final String title = animalData.nickname;
+      final String description = '#' + animalData.id;
+
+      markers.add(
+        Marker(
+          markerId: MarkerId(animalData.id),
+          position: LatLng(latitude, longitude),
+          infoWindow: InfoWindow(
+            title: title,
+            snippet: description,
+          ),
+        ),
+      );
+    });
+  }
+
+  void deleteAnimal(String id, bool confirmDelete) async {
+    if (confirmDelete) {
+      try {
+        final docSnapshot = await firestore
+            .collection('cattle')
+            .where('id', isEqualTo: id)
+            .get();
+        if (docSnapshot.docs.isNotEmpty) {
+          await docSnapshot.docs.first.reference.delete();
+          Navigator.of(context).pushNamed('navbar');
+          // O documento foi excluído com sucesso
+        } else {
+          // O documento não existe, trate o caso adequadamente
+        }
+      } catch (e) {
+        // Ocorreu um erro ao excluir o documento, trate o erro adequadamente
+      }
     }
   }
 
@@ -73,19 +130,18 @@ class _AnimalDataPageState extends State<AnimalDataPage> {
       child: Scaffold(
         extendBody: true,
         appBar: AppBar(
+          toolbarHeight: 72.0,
           backgroundColor: const Color(0xFF00DA30),
-          title: GestureDetector(
-            onTap: () {
-              Navigator.pop(context);
-            },
-            child: SvgPicture.asset(
-              'assets/images/logo-white-iomoo.svg',
-              height: 26,
-              width: 26,
-            ),
+          title: Container(
+            child: SvgPicture.asset('assets/images/logo-white-iomoo.svg',
+                height: 26, width: 26),
           ),
           actions: const <Widget>[
-            Icon(Icons.help_outline, color: Color(0xFF052C0E), size: 26.0),
+            Padding(
+              padding: EdgeInsets.only(right: 32),
+              child: Icon(Icons.help_outline,
+                  color: Color(0xFF052C0E), size: 26.0),
+            ),
           ],
         ),
         body: Center(
@@ -146,7 +202,7 @@ class _AnimalDataPageState extends State<AnimalDataPage> {
                         margin: const EdgeInsets.only(bottom: 25.0),
                         padding: const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 10),
-                        height: 50,
+                        height: 60,
                         decoration: BoxDecoration(
                           color: const Color(0xFF00DA30),
                           borderRadius: BorderRadius.circular(30),
@@ -159,7 +215,6 @@ class _AnimalDataPageState extends State<AnimalDataPage> {
                                 child: Container(
                                   alignment: Alignment.center,
                                   margin: const EdgeInsets.only(right: 5),
-                                  height: 50,
                                   decoration: BoxDecoration(
                                     color: tab == 0
                                         ? const Color(0xFF0C1E10)
@@ -335,13 +390,13 @@ class _AnimalDataPageState extends State<AnimalDataPage> {
                                         ),
                                         const SizedBox(height: 6.0),
                                         Text(
-                                          animalData.weight,
+                                          animalData.weight + ' kg',
                                           style:
                                               AppTypography.informationAnimal,
                                         ),
                                       ],
                                     ),
-                                    const SizedBox(width: 15.0),
+                                    const SizedBox(width: 25.0),
                                     Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
@@ -394,19 +449,66 @@ class _AnimalDataPageState extends State<AnimalDataPage> {
                                 width: 304,
                                 height: 65,
                                 margin:
-                                    const EdgeInsets.only(top: 24, bottom: 100),
+                                    const EdgeInsets.only(top: 48, bottom: 12),
                                 child: CustomButton(
                                   text: 'Editar ',
-                                  function: () =>
-                                      Navigator.of(context).pushNamed('navbar'),
+                                  function: () => Navigator.of(context)
+                                      .pushNamed('animal-update'),
+                                ),
+                              ),
+                              Container(
+                                width: 304,
+                                height: 65,
+                                margin:
+                                    const EdgeInsets.only(top: 12, bottom: 40),
+                                child: CustomButton(
+                                  text: 'Excluir Animal',
+                                  function: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) =>
+                                          AlertDialog(
+                                        title: const Text('Confirmação'),
+                                        content: const Text(
+                                            'Tem certeza de que deseja excluir este animal?'),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              deleteAnimal(widget.id,
+                                                  true); // Excluir o animal
+                                              Navigator.pop(
+                                                  context); // Fechar o Dialog
+                                            },
+                                            child: const Text('Sim'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(
+                                                  context); // Fechar o Dialog
+                                            },
+                                            child: const Text('Cancelar'),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
                                 ),
                               ),
                             ],
                           ),
                         ),
                       if (tab == 1)
-                        const Expanded(
-                          child: Text('Localização'),
+                        Expanded(
+                          child: GoogleMap(
+                            mapType: MapType.normal,
+                            initialCameraPosition: _kGooglePlex,
+                            onMapCreated: (GoogleMapController controller) {
+                              _controller.complete(controller);
+                              fetchDocumentsAndAddMarkers(); // Adicionar o marcador quando o mapa for criado
+                            },
+                            markers:
+                                markers, // Passar o conjunto de marcadores para o GoogleMap widget
+                          ),
                         ),
                     ],
                   ),

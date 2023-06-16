@@ -8,7 +8,7 @@ import 'package:iomoo/utilities/typography.dart';
 
 import '../utilities/icons.dart';
 
-class Notifications {
+class notifications {
   String idCattle;
 
   String nameCattle;
@@ -19,7 +19,7 @@ class Notifications {
 
   String uidUser;
 
-  Notifications(
+  notifications(
       this.idCattle, this.nameCattle, this.status, this.time, this.uidUser);
 
   Map<String, dynamic> toMap() {
@@ -74,40 +74,13 @@ class _CardAnimal extends State<CardAnimal> {
     }
   }
 
-  void deleteAnimal(String id) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => AlertDialog(
-        title: const Text('Confirmação'),
-        content: const Text('Tem certeza de que deseja excluir este animal?'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              // Aqui você pode adicionar a lógica para excluir o animal
-              firestore.collection('cattle').doc(id).delete();
-
-              Navigator.pop(context); // Fecha o Dialog
-            },
-            child: const Text('Sim'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context); // Fecha o Dialog
-            },
-            child: const Text('Cancelar'),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final String status = getStatus();
     final Color color = getStatusColor();
 
     if (status == 'Estressado') {
-      final Notifications notification = Notifications(
+      final notifications notification = notifications(
         widget.id,
         widget.name,
         status,
@@ -124,110 +97,100 @@ class _CardAnimal extends State<CardAnimal> {
         color: color,
         borderRadius: BorderRadius.circular(5),
       ),
-      child: Dismissible(
-        key: Key(widget.id),
-        onDismissed: (_) => deleteAnimal(widget.id),
-        background: Container(
-          color: Colors.red,
-          child: const Icon(Icons.delete),
-          alignment: Alignment.centerLeft,
-          padding: const EdgeInsets.only(left: 12),
-        ),
-        child: (Container(
-          margin: const EdgeInsets.only(left: 6, right: 6),
-          color: AppColors.cardBackground,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          height: 120,
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    alignment: Alignment.center,
-                    width: 66,
-                    height: 66,
-                    child: CircleAvatar(
-                      backgroundColor: AppColors.avatar.withOpacity(0.10),
-                      backgroundImage:
-                          const AssetImage('assets/images/cow-avatar.png'),
-                    ),
+      child: (Container(
+        margin: const EdgeInsets.only(left: 6, right: 6),
+        color: AppColors.cardBackground,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        height: 120,
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  alignment: Alignment.center,
+                  width: 66,
+                  height: 66,
+                  child: CircleAvatar(
+                    backgroundColor: AppColors.avatar.withOpacity(0.10),
+                    backgroundImage:
+                        const AssetImage('assets/images/cow-avatar.png'),
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        height: 30,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      height: 30,
+                      child: Text(
+                        widget.name,
+                        style: AppTypography.headingCard,
+                      ),
+                    ),
+                    Container(
+                      alignment: Alignment.topLeft,
+                      height: 20,
+                      child: Opacity(
+                        opacity: 0.3,
                         child: Text(
-                          widget.name,
-                          style: AppTypography.headingCard,
+                          '#${widget.id}',
+                          style: AppTypography.body,
                         ),
                       ),
-                      Container(
-                        alignment: Alignment.topLeft,
-                        height: 20,
-                        child: Opacity(
-                          opacity: 0.3,
-                          child: Text(
-                            '#${widget.id}',
-                            style: AppTypography.body,
-                          ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Container(
+                  width: 150,
+                  height: 30,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(94),
+                    color: color.withOpacity(0.3),
+                  ),
+                  margin: const EdgeInsets.only(right: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  alignment: Alignment.center,
+                  child: Text(
+                    status,
+                    style: TextStyle(
+                      fontFamily: 'Axiforma',
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: color,
+                    ),
+                  ),
+                ),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                  alignment: Alignment.topLeft,
+                  child: Row(
+                    children: [
+                      AppIcons.heart,
+                      const SizedBox(
+                          width: 10), // espaço entre o ícone e o texto
+                      Text(
+                        '${widget.heartRate} BPM',
+                        style: const TextStyle(
+                          fontFamily: 'Axiforma',
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.text,
                         ),
                       ),
                     ],
                   ),
-                ],
-              ),
-              Row(
-                children: [
-                  Container(
-                    width: 150,
-                    height: 30,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(94),
-                      color: color.withOpacity(0.3),
-                    ),
-                    margin: const EdgeInsets.only(right: 12),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    alignment: Alignment.center,
-                    child: Text(
-                      status,
-                      style: TextStyle(
-                        fontFamily: 'Axiforma',
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: color,
-                      ),
-                    ),
-                  ),
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-                    alignment: Alignment.topLeft,
-                    child: Row(
-                      children: [
-                        AppIcons.heart,
-                        const SizedBox(
-                            width: 10), // espaço entre o ícone e o texto
-                        Text(
-                          '${widget.heartRate} BPM',
-                          style: const TextStyle(
-                            fontFamily: 'Axiforma',
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.text,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        )),
-      ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      )),
     );
   }
 }

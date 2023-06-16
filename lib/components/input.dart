@@ -12,7 +12,7 @@ class Input extends StatefulWidget {
   final TextInputType type;
   final SvgPicture icon;
   final String hint;
-  
+
   // ignore: prefer_typing_uninitialized_variables
   var value;
 
@@ -28,6 +28,7 @@ class Input extends StatefulWidget {
     required this.value,
     this.isObscured = false,
     this.mandatory = true,
+    String? initialValue,
   }) : super(key: key);
 
   @override
@@ -35,17 +36,15 @@ class Input extends StatefulWidget {
 }
 
 class _Input extends State<Input> {
-
   final RegExp emailRegExp = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
   final RegExp dateRegExp = RegExp(r'^\d{2}/\d{2}/\d{4}$');
-  final RegExp weightRegExp = RegExp(r'^(?:0*(?:\d{1,2}(?:\.\d+)?|1000(?:\.0+)?))$');
+  final RegExp weightRegExp =
+      RegExp(r'^(?:0*(?:\d{1,2}(?:\.\d+)?|1000(?:\.0+)?))$');
 
   var maskFormatter = MaskTextInputFormatter(
       mask: '##/##/####',
       filter: {"#": RegExp(r'[0-9]')},
       type: MaskAutoCompletionType.lazy);
-
-
 
   String? validateEmail(String? value) {
     if (!emailRegExp.hasMatch(value!)) {
@@ -73,21 +72,18 @@ class _Input extends State<Input> {
       if (value == null || value.isEmpty) {
         return '${widget.label} não pode ser vazio.';
       }
-      
-      if (widget.type == TextInputType.emailAddress){
+
+      if (widget.type == TextInputType.emailAddress) {
         return validateEmail(value);
-      }
-      else if (widget.type == TextInputType.visiblePassword){
+      } else if (widget.type == TextInputType.visiblePassword) {
         return validatePassword(value);
-      }
-      else if (widget.type == TextInputType.number){
+      } else if (widget.type == TextInputType.number) {
         return validateWeight(value);
       }
     }
     return null;
   }
 
-  
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -110,7 +106,8 @@ class _Input extends State<Input> {
             autovalidateMode: AutovalidateMode.onUserInteraction,
             validator: validateInput,
             onSaved: widget.value,
-            inputFormatters: widget.type == TextInputType.datetime ?  [maskFormatter] : null,
+            inputFormatters:
+                widget.type == TextInputType.datetime ? [maskFormatter] : null,
             keyboardType: widget.type,
             cursorColor: AppColors.primaryColor, // Define a cor do cursor
             obscureText: widget.isObscured,

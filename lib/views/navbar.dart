@@ -39,6 +39,7 @@ class _NavBarPageState extends State<NavBarPage> {
         appBar: AppBar(
           toolbarHeight: 72.0,
           backgroundColor: const Color(0xFF00DA30),
+          elevation: 0,
           title: Container(
             child: SvgPicture.asset('assets/images/logo-white-iomoo.svg',
                 height: 26, width: 26),

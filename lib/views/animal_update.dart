@@ -30,7 +30,7 @@ class _AnimalUpdatePageState extends State<AnimalUpdatePage> {
   String? birthday;
   String? breed;
   String? id;
-  String? idDevice = "89J5RTYHRT89H4ERG4456.94561YR561RGDF561FGDHG51DDF561G";
+  String? idDevice;
   String? nickname;
   String? weight;
 
@@ -61,13 +61,29 @@ class _AnimalUpdatePageState extends State<AnimalUpdatePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: true,
+      appBar: AppBar(
+        toolbarHeight: 72.0,
+        backgroundColor: const Color(0xFF00DA30),
+        title: Container(
+          child: SvgPicture.asset('assets/images/logo-white-iomoo.svg',
+              height: 26, width: 26),
+        ),
+        actions: const <Widget>[
+          Padding(
+            padding: EdgeInsets.only(right: 32),
+            child:
+                Icon(Icons.help_outline, color: Color(0xFF052C0E), size: 26.0),
+          ),
+        ],
+      ),
       body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 32),
+        padding: const EdgeInsets.symmetric(horizontal: 38.0, vertical: 32),
         children: [
           Center(
             child: Column(
               crossAxisAlignment:
-                  CrossAxisAlignment.start, // Define o alinhamento à esquerda
+                  CrossAxisAlignment.center, // Define o alinhamento à esquerda
               children: [
                 //Texto
                 Container(
@@ -80,7 +96,7 @@ class _AnimalUpdatePageState extends State<AnimalUpdatePage> {
                   ),
                 ),
                 Container(
-                  margin: const EdgeInsets.only(bottom: 24.0),
+                  margin: const EdgeInsets.only(bottom: 32.0),
                   child: const Text(
                     'Informe todos os dados abaixo para cadastrar o animal.',
                     textAlign: TextAlign.left,
@@ -91,12 +107,13 @@ class _AnimalUpdatePageState extends State<AnimalUpdatePage> {
                 Form(
                   key: formKey,
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Campo de identificação
                       Input(
                           label: 'Identificação do Animal*',
-                          type: TextInputType.none,
+                          type: TextInputType.name,
                           icon: AppIcons.id,
                           hint: '#38724951',
                           value: (value) => id = value),
@@ -104,7 +121,7 @@ class _AnimalUpdatePageState extends State<AnimalUpdatePage> {
                       // Campo de apelido
                       Input(
                           label: 'Apelido do Animal',
-                          type: TextInputType.none,
+                          type: TextInputType.name,
                           icon: AppIcons.nickname,
                           hint: 'Otis',
                           mandatory: false,
@@ -115,6 +132,7 @@ class _AnimalUpdatePageState extends State<AnimalUpdatePage> {
                         'Informe a raça do animal*',
                         style: AppTypography.label,
                       ),
+                      SizedBox(height: 8),
                       Container(
                           width: 304,
                           height: 70,
@@ -189,6 +207,7 @@ class _AnimalUpdatePageState extends State<AnimalUpdatePage> {
                           value: (value) => birthday = value),
 
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -207,6 +226,7 @@ class _AnimalUpdatePageState extends State<AnimalUpdatePage> {
                                   cursorColor: const Color(
                                       0xFF00DA30), // Define a cor do cursor
                                   decoration: InputDecoration(
+                                    contentPadding: EdgeInsets.all(20),
                                     hintText: '124 kg',
                                     hintStyle: AppTypography.inputHint,
                                     border: OutlineInputBorder(
@@ -244,6 +264,7 @@ class _AnimalUpdatePageState extends State<AnimalUpdatePage> {
                                 height: 70,
                                 child: DropdownButtonFormField<String>(
                                   decoration: InputDecoration(
+                                    contentPadding: EdgeInsets.all(18),
                                     hintText: 'Sexo',
                                     hintStyle: AppTypography.inputHint,
                                     border: OutlineInputBorder(
@@ -296,7 +317,14 @@ class _AnimalUpdatePageState extends State<AnimalUpdatePage> {
                           onTap: () async {
                             await showBarModalBottomSheet(
                               context: context,
-                              builder: (context) => const ModalNFC(),
+                              builder: (context) => ModalNFC(
+                                onTagRead: (value) {
+                                  setState(() {
+                                    idDevice = value;
+                                  });
+                                  Navigator.of(context).pop();
+                                },
+                              ),
                             );
                           },
                           child: Column(
@@ -313,7 +341,7 @@ class _AnimalUpdatePageState extends State<AnimalUpdatePage> {
                                       text:
                                           'Clique aqui para ', // Texto a ser exibido
                                       style: TextStyle(
-                                        fontSize: 16.0,
+                                        fontSize: 14.0,
                                         color:
                                             Color(0xFF0C1E10), // Cor do texto
                                       ),
@@ -322,7 +350,7 @@ class _AnimalUpdatePageState extends State<AnimalUpdatePage> {
                                       text:
                                           'adicionar um dispositivo', // Parte do texto com uma cor diferente
                                       style: TextStyle(
-                                        fontSize: 16.0,
+                                        fontSize: 14.0,
                                         color: AppColors
                                             .primaryColor, // Cor do texto
                                       ),
@@ -334,13 +362,12 @@ class _AnimalUpdatePageState extends State<AnimalUpdatePage> {
                           ),
                         ),
                       ),
-
                       Container(
                         width: 304,
                         height: 65,
-                        margin: const EdgeInsets.only(top: 24, bottom: 100),
+                        margin: const EdgeInsets.only(top: 40, bottom: 8),
                         child: CustomButton(
-                          text: 'Finalizar Cadastro',
+                          text: 'Atualiizar Dados',
                           function: () => updateAnimal(context),
                         ),
                       ),

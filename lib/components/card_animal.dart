@@ -8,7 +8,7 @@ import 'package:iomoo/utilities/typography.dart';
 
 import '../utilities/icons.dart';
 
-class notifications {
+class Notifications {
   String idCattle;
 
   String nameCattle;
@@ -19,7 +19,7 @@ class notifications {
 
   String uidUser;
 
-  notifications(
+  Notifications(
       this.idCattle, this.nameCattle, this.status, this.time, this.uidUser);
 
   Map<String, dynamic> toMap() {
@@ -53,6 +53,47 @@ class CardAnimal extends StatefulWidget {
 class _CardAnimal extends State<CardAnimal> {
   FirebaseAuth auth = FirebaseAuth.instance;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
+  bool notificationAdded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    checkAndAddNotification();
+  }
+
+  void checkAndAddNotification() async {
+    final String status = getStatus();
+
+    final Notifications notification = Notifications(
+      widget.id,
+      widget.name,
+      status,
+      DateTime.now(),
+      auth.currentUser!.uid,
+    );
+
+    if (status == 'Estressado' && !notificationAdded) {
+      final QuerySnapshot querySnapshot = await firestore
+          .collection('notifications')
+          .where('idCattle', isEqualTo: widget.id)
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isEmpty) {
+        // Não há documentos com o mesmo idCattle, então podemos criar um novo
+        await firestore.collection('notifications').add(notification.toMap());
+      } else {
+        // Já existe um documento com o mesmo idCattle
+        // Faça o tratamento adequado, como exibir uma mensagem de erro ou atualizar o documento existente
+        // Aqui, estou apenas imprimindo uma mensagem
+        print('Já existe um documento com o mesmo idCattle');
+      }
+
+      setState(() {
+        notificationAdded = true;
+      });
+    }
+  }
 
   String getStatus() {
     if (widget.heartRate < 80) {
@@ -74,13 +115,31 @@ class _CardAnimal extends State<CardAnimal> {
     }
   }
 
+  void deleteAnimal(String id, bool confirmDelete) async {
+    if (confirmDelete) {
+      try {
+        final docSnapshot = await firestore
+            .collection('cattle')
+            .where('id', isEqualTo: id)
+            .get();
+        if (docSnapshot.docs.isNotEmpty) {
+          await docSnapshot.docs.first.reference.delete();
+        } else {
+          // O documento não existe, trate o caso adequadamente
+        }
+      } catch (e) {
+        // Ocorreu um erro ao excluir o documento, trate o erro adequadamente
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final String status = getStatus();
     final Color color = getStatusColor();
 
     if (status == 'Estressado') {
-      final notifications notification = notifications(
+      final Notifications notification = Notifications(
         widget.id,
         widget.name,
         status,

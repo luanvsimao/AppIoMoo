@@ -49,7 +49,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                           id: notification['idCattle'],
                           status: notification['status'],
                           notificationOption: 'Status',
-                          saw: false,
+                          saw: notification['saw'],
                         ),
                       )
                       .toList(),

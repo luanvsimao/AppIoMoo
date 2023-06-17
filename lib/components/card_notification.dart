@@ -1,5 +1,6 @@
 // ignore_for_file: sized_box_for_whitespace
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../utilities/colors.dart';
@@ -20,7 +21,7 @@ class CardNotification extends StatefulWidget {
     this.heartRate = 0,
     this.status = '',
     this.notificationOption = 'Status',
-    this.saw = false,
+    required this.saw,
   }) : super(key: key);
 
   @override
@@ -29,23 +30,40 @@ class CardNotification extends StatefulWidget {
 }
 
 class _CardNotification extends State<CardNotification> {
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.fromLTRB(32,32,32,12),
+      margin: const EdgeInsets.fromLTRB(32, 32, 32, 12),
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
       decoration: BoxDecoration(
-          color: widget.saw ? const Color(0xFFECECEC) : AppColors.primaryColor.withOpacity(0.04),
+          color: widget.saw
+              ? const Color(0xFFECECEC)
+              : AppColors.primaryColor.withOpacity(0.04),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: widget.saw ? Colors.transparent : AppColors.primaryColor,
             width: 2.0, // Largura da borda
           )),
       child: GestureDetector(
-        onTap: () => setState(() {
-          widget.saw = true;
-        }), // Função de callback para lidar com o clique no card
+        onTap: () async {
+          setState(() {
+            widget.saw = true;
+          });
+
+          final docSnapshot = await firestore
+              .collection('notifications')
+              .where('idCattle', isEqualTo: widget.id)
+              .get();
+
+          if (docSnapshot.docs.isNotEmpty) {
+            docSnapshot.docs.first.reference.update({'saw': widget.saw});
+          } else {
+            // The document doesn't exist, handle the case appropriately
+          }
+        }, // Função de callback para lidar com o clique no card
 
         child: IntrinsicHeight(
           child: Column(

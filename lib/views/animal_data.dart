@@ -451,9 +451,10 @@ class _AnimalDataPageState extends State<AnimalDataPage> {
                                 margin:
                                     const EdgeInsets.only(top: 48, bottom: 12),
                                 child: CustomButton(
-                                  text: 'Editar ',
+                                  text: 'Editar',
                                   function: () => Navigator.of(context)
-                                      .pushNamed('animal-update'),
+                                      .pushNamed('animal-update',
+                                          arguments: animalData),
                                 ),
                               ),
                               Container(

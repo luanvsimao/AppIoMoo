@@ -12,6 +12,7 @@ class Input extends StatefulWidget {
   final TextInputType type;
   final SvgPicture icon;
   final String hint;
+  final initvalue;
 
   // ignore: prefer_typing_uninitialized_variables
   var value;
@@ -28,7 +29,7 @@ class Input extends StatefulWidget {
     required this.value,
     this.isObscured = false,
     this.mandatory = true,
-    String? initialValue,
+    this.initvalue,
   }) : super(key: key);
 
   @override
@@ -106,6 +107,7 @@ class _Input extends State<Input> {
             autovalidateMode: AutovalidateMode.onUserInteraction,
             validator: validateInput,
             onSaved: widget.value,
+            initialValue: widget.initvalue,
             inputFormatters:
                 widget.type == TextInputType.datetime ? [maskFormatter] : null,
             keyboardType: widget.type,
